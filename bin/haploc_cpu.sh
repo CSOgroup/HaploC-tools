@@ -39,30 +39,32 @@ sizeGb=$(grep '^sizeGb=' $config_f | cut -d '=' -f 2)
 thread4bwa=$(grep '^thread4bwa=' $config_f | cut -d '=' -f 2)
 repo_dir=$(grep '^repo_dir=' $config_f | cut -d '=' -f 2)
 HaploC_sh=$repo_dir/HaploC/main/HaploC_helper_cpu.sh
+downstream_sh=$repo_dir/bin/downstreams.sh
 
 ##############################
 
 mkdir -p ${wk_dir}/log_file
 echo ${wk_dir}
 
-############################## STEP0: split fastq
-
-k=split
-log_f=${wk_dir}/log_file/log.$k
-data_source_f=${wk_dir}/log_file/data_source.txt
-n_data=$(find ${wk_dir} -type f -name '*1.fastq.gz' | wc -l)
-find ${wk_dir} -type f -name '*_1.fastq.gz' -exec basename {} \; | sed 's/_1.fastq.gz//' > $data_source_f
-for ((id=1; id<=n_data; id++)); do $HaploC_sh -d ${wk_dir} -k $k -m $id; done
-
-############################## STEP1: distribute data to chunks
-
-k=distr
-$HaploC_sh -d ${wk_dir} -k $k
-
 ###############################
 
 run_HaploC()
 {
+
+	############################## STEP0: split fastq
+
+	k=split
+	log_f=${wk_dir}/log_file/log.$k
+	data_source_f=${wk_dir}/log_file/data_source.txt
+	n_data=$(find ${wk_dir} -type f -name '*1.fastq.gz' | wc -l)
+	find ${wk_dir} -type f -name '*_1.fastq.gz' -exec basename {} \; | sed 's/_1.fastq.gz//' > $data_source_f
+	for ((id=1; id<=n_data; id++)); do $HaploC_sh -d ${wk_dir} -k $k -m $id; done
+
+	############################## STEP1: distribute data to chunks
+
+	k=distr
+	$HaploC_sh -d ${wk_dir} -k $k
+
 	##############################
 
 	n_chunks_f=$wk_dir/log_file/n_chunks.txt
@@ -72,12 +74,12 @@ run_HaploC()
 	############################## STEP2: align and so on	
 
 	k=bwa
-	for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk; done
+	for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk & done; wait
 		
 	############################## STEP3: proceed to generate hic
 
 	k=hic
-	for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk & done
+	for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk & done; wait
 
 	############################## STEP3x: generate mega / do not do mega
 
