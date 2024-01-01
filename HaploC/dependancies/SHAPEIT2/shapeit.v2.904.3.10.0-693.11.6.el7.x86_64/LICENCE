@@ -1,0 +1,35 @@
+ Academic License Agreement
+
+The bioinformatics department of Conservatoire National des Arts et Metiers (CNAM) has developed a new algorithm for a faster computation of hidden Markov models, based on graph representations. This algorithm has been notably applied for the reconstruction of haplotypes from population genotypic data leading to the SHAPEIT software. This algorithm and its applications, including SHAPEIT, are patent pending. The Conservatoire National des Arts et Metiers (CNAM), Prof. Jean-Francois ZAGURY and his group of the bioinformatics department (the developers), give permission for you and your laboratory (Institution) to use SHAPEIT. CNAM and the developers allow researchers at your Institution to copy and modify SHAPEIT for internal, non-profit research purposes, on the following conditions:
+
+The SHAPEIT software remains at your Institution and is not published, distributed, or otherwise transferred or made available to other than Institution employees and students involved in research under your supervision. If you wish to obtain SHAPEIT for any commercial purposes or for diffusion through the internet, you will need to execute a separate licensing agreement with CNAM and pay a fee. This includes, but is not limited to, using SHAPEIT to provide services to outside parties for a fee. In that case please contact :
+
+Pr. Zagury, CNAM.
+Tel : 33 1 58 80 88 20
+Mail : zagury at cnam.fr
+
+The software is distributed under the following conditions of use
+
+You retain in SHAPEIT and any modifications to SHAPEIT, the copyright, trademark, or other notices pertaining to SHAPEIT as provided by CNAM.
+
+You provide the developers with feedback on the use of SHAPEIT in your research, and that the Developers and CNAM are permitted to use any information you provide in making changes to the SHAPEIT software. All bug reports and technical questions shall be sent to the mail list here      
+
+https://www.jiscmail.ac.uk/cgi-bin/webadmin?A0=OXSTATGEN
+
+You acknowledge that the developers, CNAM and its licensees may develop modifications to SHAPEIT that may be substantially similar to your modifications of SHAPEIT, and that the developers, CNAM and its licensees shall not be constrained in any way by you in CNAM's or its licensees' use or management of such modifications. You acknowledge the right of the developers and CNAM to prepare and publish modifications to SHAPEIT that may be substantially similar or functionally equivalent to your modifications and improvements, and if you obtain patent protection for any modification or improvement to SHAPEIT you agree not to allege or enjoin infringement of your patent by the Developers, CNAM or by any of CNAM's licensees obtaining modifications or improvements to SHAPEIT from the CNAM or the Developers. If utilisation of the SHAPEIT software results in outcomes which will be published, please specify the version of SHAPEIT you used and cite one of the following publications.
+
+O. Delaneau, J. Marchini, JF. Zagury (2012) A linear complexity phasing method for thousands of genomes. Nat Methods. 9(2):179-81. doi: 10.1038/nmeth.1785
+
+O. Delaneau, JF. Zagury, J. Marchini (2013) Improved whole chromosome phasing for disease and population genetic studies. Nat Methods. 10(1):5-6. doi: 10.1038/nmeth.2307
+
+O. Delaneau, B. Howie, A. Cox, J-F. Zagury, J. Marchini (2013) Haplotype estimation using sequence reads. American Journal of Human Genetics 93 (4) 787-696
+
+J. O'Connell, D. Gurdasani, O. Delaneau, et al. (2014) A general approach for haplotype phasing across the full spectrum of relatedness. PLoS Genetic
+
+O. Delaneau, J. Marchini, The 1000 Genomes Project Consortium (2014) Integrating sequence and array data to create an improved 1000 Genomes Project haplotype reference panel. (in press)
+
+Any risk associated with using the SHAPEIT software at your institution is with you and your Institution. SHAPEIT is experimental in nature and is made available as a research courtesy "AS IS," without obligation by CNAM to provide accompanying services or support.
+
+CNAM AND THE AUTHORS EXPRESSLY DISCLAIM ANY AND ALL WARRANTIES REGARDING THE SOFTWARE, WHETHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES PERTAINING TO MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+

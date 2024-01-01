@@ -1,0 +1,33 @@
+
+
+
+while getopts "k:n:d:g:R:a:hrs:p:y:z:S:D:fjt:b:" opt; do
+    case $opt in
+    k) k=$OPTARG ;;  ## I seperated them into 4 steps     
+    n) fastq_prefix=$OPTARG ;; ## Your fastq file is named as fastq1=$fastqdir/${fastq_prefix}_R1.fastq.gz
+    g) genomeID=$OPTARG ;; ## hg19
+    h) printHelpAndExit 0;;
+    d) topDir=$OPTARG ;; ## dir of your output
+    s) site=$OPTARG ;; 
+    R) shortreadend=$OPTARG ;;
+    r) shortread=1 ;;  #use short read aligner
+    a) about=$OPTARG ;;
+    p) genomePath=$OPTARG ;;  
+    y) site_file=$OPTARG ;;
+    z) refSeq=$OPTARG ;;
+    S) stage=$OPTARG ;;
+    D) juiceDir=$OPTARG ;;
+    f) nofrag=0 ;; #use fragment maps
+    b) ligation=$OPTARG ;;
+        t) threads=$OPTARG ;;
+    j) justexact=1 ;;
+    [?]) printHelpAndExit 1;;
+    esac
+done
+
+Example code:
+
+(change k for different steps)
+
+/mnt/ndata/Yuanlong/3.Packages/juicer/scripts/my_juicer.sh -k 1 -s MboI -n Your_fastq_prefix -g hg19 -z /mnt/ndata/Yuanlong/3.Packages/juicer/references/hg19_chr1_22XYM.fa -d /mnt/ptemp/Yuanlong/1.Data/phasing/WSU_v2//run1 -D /mnt/ndata/Yuanlong/3.Packages/juicer -y /mnt/ndata/Yuanlong/3.Packages/juicer/restriction_sites/hg19_MboI.txt -p /mnt/ndata/Yuanlong/3.Packages/juicer/references/hg19.chrom.sizes -t 30 >> /mnt/ptemp/Yuanlong/1.Data/phasing/WSU_v2//run1/log.txt
+

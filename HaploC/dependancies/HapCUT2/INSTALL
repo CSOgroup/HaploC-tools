@@ -1,0 +1,20 @@
+REQUIREMENTS
+=============
+
+HapCUT2 is written in C and requires a gcc like compiler to compile the source code. HapCUT2 requires the htslib library (> 1.2.1) for reading BAM files. It is assumed that htslib is installed, but otherwise the path can be specified in the Makefile (HTSLIB=path). To install htslib directly from source:
+
+git clone https://github.com/samtools/htslib.git
+cd htslib
+make
+
+
+HOW TO COMPILE THE CODE
+========================
+
+Run 'make' in the project master directory.
+
+
+HOW TO INSTALL THE PROGRAMS
+========================
+
+Run 'sudo make install' after compiling the code.
