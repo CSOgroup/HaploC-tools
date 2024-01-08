@@ -48,9 +48,13 @@ case $k in
     "bwa")
         Rscript $main_R $wk_dir $k $chunk_num
         ;;
-    "hic" | "rep")
+    "hic")
         Rscript $main_R $wk_dir $k $chunk_num
         ;;
+    "rep")
+        conda activate HapCUT2
+        $repair_sh -d $wk_dir -c $chunk_num
+        ;;        
     "snp")
         Rscript $main_R $wk_dir $k
         ;;
