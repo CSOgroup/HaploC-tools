@@ -16,7 +16,7 @@ for arg in "$@"; do [[ $arg == "--help" ]] && usage && exit 0; done
 
 ##############################
 
-while getopts ":d:k:s:h:" opt; do
+while getopts ":d:k:s:h" opt; do
   case $opt in
     d) wk_dir="$OPTARG"
     ;;

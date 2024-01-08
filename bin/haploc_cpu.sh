@@ -15,7 +15,7 @@ downstream=false
 
 ##############################
 
-while getopts ":d:h:x:" opt; do
+while getopts ":d:x:h" opt; do
   case $opt in
     d) wk_dir="$OPTARG"
     ;;

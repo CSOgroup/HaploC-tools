@@ -19,6 +19,10 @@
     #########################################################
 
     source(sprintf('%s/header/HaploC_header.R', repo_dir))
+    if(genome_version=='hg19' & chr_num=='23') chr_num='X'
+    if(genome_version=='mm10' & chr_num=='20') chr_num='X'
+    chr_char = paste0('chr', chr_num)
+
     chr_nums2use = get_chr2use(wk_dir, genome_version) ## character
     if(!(chr_num %in% chr_nums2use))
     {
@@ -29,10 +33,6 @@
     ################################################################################
 
     QUAL_thresh = 10
-    if(genome_version=='hg19' & chr_num=='23') chr_num='X'
-    if(genome_version=='mm10' & chr_num=='20') chr_num='X'    
-    chr_char = paste0('chr', chr_num)
-
     VCF_DIR      = paste0(wk_dir, '/mega/VCFs/')
     VCF_prefix   = 'mega'
     ref_fa = ref_fa_li[[genome_version]]

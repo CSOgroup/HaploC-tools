@@ -4,7 +4,7 @@ export LC_ALL=C
 ##############################
 
 usage() {
-    echo "Usage: haploc_cpu.sh [-d wk_dir] [-h]"
+    echo "Usage: phasing_new_hic_slurm.sh [-d wk_dir] [-h]"
     echo "  -p    Set the phased Hi-C directory."
     echo "  -d    Set the new Hi-C directory to run HaploC analysis."    
     echo "  -x    Also include downstreams analysis (diffIns, diffComp and HaploCNV)."    
@@ -16,7 +16,7 @@ downstream=false
 
 ##############################
 
-while getopts ":d:h:x:" opt; do
+while getopts ":d:x:h" opt; do
   case $opt in
     p) phased_dir="$OPTARG"
     ;;  	

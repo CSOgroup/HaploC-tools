@@ -4,7 +4,7 @@ export LC_ALL=C
 ##############################
 
 usage() {
-    echo "Usage: haploc_cpu.sh [-d wk_dir] [-h]"
+    echo "Usage: haploc_slurm.sh [-d wk_dir] [-h]"
     echo "  -d    Set the working directory (wk_dir)."
     echo "  -x    Also include downstreams analysis (diffIns, diffComp and HaploCNV)."    
     echo "  -h    Display this help and exit."
@@ -15,7 +15,7 @@ downstream=false
 
 ##############################
 
-while getopts ":d:h:x:" opt; do
+while getopts ":d:x:h" opt; do
   case $opt in
     d) wk_dir="$OPTARG"
     ;;
@@ -72,7 +72,7 @@ run_HaploC()
 
 	############################## STEP2: align and so on	
 
-	k=bwa; 
+	k=bwa
 	log_f=$wk_dir/log_file/log.$k
 	n_chunks=$(cat "$n_chunks_f")
 	jid_bwa=$(sbatch -J $k.$ID -c $thread4bwa --mem 120G --time=300 --array=1-$n_chunks -o $log_f.chunk=%a.txt $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## for files > 10Gb
@@ -158,13 +158,13 @@ run_HaploC()
 
 	k=diffComp
 	log_f=$wk_dir/log_file/log.$k.txt
-	jid_diffComp=$(sbatch -J $k.$ID -c 10 --mem 50G --time=30 -o $log_f --dependency=afterany:$jid_mates $downstream_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## for files > 10Gb
+	jid_diffComp=$(sbatch -J $k.$ID -c 10 --mem 50G --time=30 -o $log_f --dependency=afterany:$jid_mates:$jid_mega $downstream_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## for files > 10Gb
 	echo diffComp $jid_diffComp >> $job_id_f
 
 	k=HaploCNV
 	bin_size=100000
 	log_f=$wk_dir/log_file/log.$k.txt
-	jid_HaploCNV=$(sbatch -J $k.$ID -c 10 --mem 50G --time=30 -o $log_f --dependency=afterany:$jid_diffComp $downstream_sh -d $wk_dir -k $k -s $bin_size | sed 's/Submitted batch job //')
+	jid_HaploCNV=$(sbatch -J $k.$ID -c 10 --mem 50G --time=30 -o $log_f --dependency=afterany:$jid_diffComp:$jid_mega $downstream_sh -d $wk_dir -k $k -s $bin_size | sed 's/Submitted batch job //')
 	echo HaploCNV $jid_HaploCNV >> $job_id_f
 }
 
