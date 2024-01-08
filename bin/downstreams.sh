@@ -7,7 +7,7 @@ conda activate nHapCUT2
 usage() {
     echo "Usage: downstreams.sh [-d wk_dir] [-k module] [-s bin_size] [-h]"
     echo "  -d    Set the working directory (wk_dir)."
-    echo "  -k    Set the module to run, should be one of: diffIns, diffComp, HaploCNV"
+    echo "  -k    Set the module to run, should be one of: diffIns, diffComp, HaploCNV. Note: diffComp needs to be run first for HaploCNV analysis"
     echo "  -s    Set the bin size. Default value: 25000 for diffIns analysis, 100000 for HaploCNV analysis"
     echo "  -h    Display this help and exit."
 }
