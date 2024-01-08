@@ -49,7 +49,7 @@
         fs = sort(fs)
         fs_bases = basename(fs)
         bases = substr(fs_bases, 1, nchar(fs_bases) - 11)
-        if(substr(bases[1], nchar(bases[1]) - 1, nchar(bases) - 1)=='_') bases = substr(fs_bases, 1, nchar(fs_bases) - 12)
+        if(substr(bases[1], nchar(bases[1]) - 1, nchar(bases[1]) - 1)=='_') bases = substr(fs_bases, 1, nchar(fs_bases) - 12)
 
         bases_uniq = unique(bases)
         n_chunks = length(bases_uniq)

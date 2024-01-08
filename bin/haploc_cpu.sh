@@ -15,20 +15,20 @@ downstream=false
 
 ##############################
 
-while getopts ":d:x:h" opt; do
-  case $opt in
+while getopts ":d:h:x:" opt; do
+case $opt in
     d) wk_dir="$OPTARG"
     ;;
     x) downstream="$OPTARG"
     ;;
     h) usage
-       exit 0
+        exit 0
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
-       usage
-       exit 1
+        usage
+        exit 1
     ;;
-  esac
+esac
 done
 
 ##############################
@@ -51,85 +51,98 @@ echo ${wk_dir}
 run_HaploC()
 {
 
-	############################## STEP0: split fastq
+    ############################## STEP0: split fastq
 
-	k=split
-	log_f=${wk_dir}/log_file/log.$k
-	data_source_f=${wk_dir}/log_file/data_source.txt
-	n_data=$(find ${wk_dir} -type f -name '*1.fastq.gz' | wc -l)
-	find ${wk_dir} -type f -name '*_1.fastq.gz' -exec basename {} \; | sed 's/_1.fastq.gz//' > $data_source_f
-	for ((id=1; id<=n_data; id++)); do $HaploC_sh -d ${wk_dir} -k $k -m $id; done
+    k=split
+    log_f=${wk_dir}/log_file/log.$k.txt
+    data_source_f=${wk_dir}/log_file/data_source.txt
+    n_data=$(find ${wk_dir} -type f -name '*1.fastq.gz' | wc -l)
+    find ${wk_dir} -type f -name '*_1.fastq.gz' -exec basename {} \; | sed 's/_1.fastq.gz//' > $data_source_f
+    for ((id=1; id<=n_data; id++)); do $HaploC_sh -d ${wk_dir} -k $k -m $id >> $log_f 2>&1; done
 
-	############################## STEP1: distribute data to chunks
+    ############################## STEP1: distribute data to chunks
 
-	k=distr
-	$HaploC_sh -d ${wk_dir} -k $k
+    k=distr
+    log_f=$wk_dir/log_file/log.$k.txt
+    $HaploC_sh -d ${wk_dir} -k $k >> $log_f 2>&1
 
-	##############################
+    ##############################
 
-	n_chunks_f=$wk_dir/log_file/n_chunks.txt
-	while [ ! -f $n_chunks_f ]; do sleep 10; done
-	n_chunks=$(cat "$n_chunks_f")
+    n_chunks_f=$wk_dir/log_file/n_chunks.txt
+    while [ ! -f $n_chunks_f ]; do sleep 10; done
+    n_chunks=$(cat "$n_chunks_f")
 
-	############################## STEP2: align and so on	
+    ############################## STEP2: align and so on   
 
-	k=bwa
-	for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk & done; wait
-		
-	############################## STEP3: proceed to generate hic
+    k=bwa
+    log_f=$wk_dir/log_file/log.$k.txt
+    for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk >> $log_f 2>&1 & done; wait
+        
+    ############################## STEP3: proceed to generate hic
 
-	k=hic
-	for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk & done; wait
+    k=hic
+    log_f=$wk_dir/log_file/log.$k.txt
+    for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk >> $log_f 2>&1 & done; wait
 
-	############################## STEP3x: generate mega / do not do mega
+    ############################## STEP3x: generate mega / do not do mega
 
-	k=mega
-	$HaploC_sh -d ${wk_dir} -k $k
+    k=mega
+    log_f=$wk_dir/log_file/log.$k.txt
+    $HaploC_sh -d ${wk_dir} -k $k >> $log_f 2>&1
 
-	############################## STEP4: call snps, do not depend on previous step
+    ############################## STEP4: call snps, do not depend on previous step
 
-	k=snp
-	$HaploC_sh -d ${wk_dir} -k $k
+    k=snp
+    log_f=$wk_dir/log_file/log.$k.txt
+    $HaploC_sh -d ${wk_dir} -k $k >> $log_f 2>&1
 
-	############################## STEP5: intersect SNP and gzip
+    ############################## STEP5: intersect SNP and gzip
 
-	k=sec
-	for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk & done; wait
+    k=sec
+    log_f=$wk_dir/log_file/log.$k.txt
+    for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk >> $log_f 2>&1 & done; wait
 
-	############################### STEP6: repair
+    ############################### STEP6: repair
 
-	k=rep
-	for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk & done; wait
+    k=rep
+    log_f=$wk_dir/log_file/log.$k.txt
+    for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk >> $log_f 2>&1 & done; wait
 
-	############################### STEP7: intg
+    ############################### STEP7: intg
 
-	k=intg
-	for chr in $(seq 1 23); do $HaploC_sh -d ${wk_dir} -k $k -c $chr & done; wait
+    k=intg
+    log_f=$wk_dir/log_file/log.$k.txt
+    for chr in $(seq 1 23); do $HaploC_sh -d ${wk_dir} -k $k -c $chr >> $log_f 2>&1 & done; wait
 
-	############################### STEP8: opt
+    ############################### STEP8: opt
 
-	k=opt
-	$HaploC_sh -d ${wk_dir} -k $k
+    k=opt
+    log_f=$wk_dir/log_file/log.$k.txt
+    $HaploC_sh -d ${wk_dir} -k $k >> $log_f 2>&1
 
-	############################### STEP9: mates
+    ############################### STEP9: mates
 
-	k=mates
-	$HaploC_sh -d ${wk_dir} -k $k
+    k=mates
+    log_f=$wk_dir/log_file/log.$k.txt
+    $HaploC_sh -d ${wk_dir} -k $k >> $log_f 2>&1
 
-	###############################
+    ###############################
 
-	[ "$downstream" = "false" ] && exit
+    [ "$downstream" = "false" ] && exit
 
-	k=diffIns
-	bin_size=25000	
-	$downstream_sh -d $wk_dir -k $k -s $bin_size
+    k=diffIns
+    log_f=$wk_dir/log_file/log.$k.txt
+    bin_size=25000  
+    $downstream_sh -d $wk_dir -k $k -s $bin_size >> $log_f 2>&1
 
-	k=diffComp
-	$downstream_sh -d $wk_dir -k $k
+    k=diffComp
+    log_f=$wk_dir/log_file/log.$k.txt
+    $downstream_sh -d $wk_dir -k $k >> $log_f 2>&1
 
-	k=HaploCNV
-	bin_size=100000
-	$downstream_sh -d $wk_dir -k $k -s $bin_size
+    k=HaploCNV
+    log_f=$wk_dir/log_file/log.$k.txt
+    bin_size=100000
+    $downstream_sh -d $wk_dir -k $k -s $bin_size >> $log_f 2>&1
 }
 
 ##############################

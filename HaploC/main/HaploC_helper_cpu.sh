@@ -1,4 +1,5 @@
 #!/bin/bash --login
+# set -euo pipefail
 
 conda activate nHapCUT2
 export LC_ALL=C
