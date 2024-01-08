@@ -4,10 +4,10 @@ export LC_ALL=C
 ##############################
 
 usage() {
-    echo "Usage: phasing_new_hic_slurm.sh [-d wk_dir] [-h]"
+    echo "Usage: phasing_new_hic_slurm.sh [-p phased_dir] [-d wk_dir] [-x] [-h]"
     echo "  -p    Set the phased Hi-C directory."
     echo "  -d    Set the new Hi-C directory to run HaploC analysis."    
-    echo "  -x    Also include downstreams analysis (diffIns, diffComp and HaploCNV)."    
+    echo "  -x    Include downstream analysis (diffIns, diffComp, and HaploCNV) when set as "true". Optional."
     echo "  -h    Display this help and exit."
 }
 

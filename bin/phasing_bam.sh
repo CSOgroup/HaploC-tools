@@ -5,8 +5,9 @@ conda activate nHapCUT2
 ##############################
 
 usage() {
-    echo "Usage: haploc_cpu.sh [-d wk_dir] [-h]"
+    echo "Usage: phasing_bam.sh [-d wk_dir] [-b bam_file] [-h]"
     echo "  -d    Set the working directory (wk_dir)."
+    echo "  -b    The bam file to be phased."    
     echo "  -h    Display this help and exit."
 }
 
@@ -14,7 +15,7 @@ for arg in "$@"; do [[ $arg == "--help" ]] && usage && exit 0; done
 
 ##############################
 
-while getopts ":d:b:h:" opt; do
+while getopts ":d:b:h" opt; do
   case $opt in
     d) wk_dir="$OPTARG"
     ;;

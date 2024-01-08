@@ -4,9 +4,9 @@ export LC_ALL=C
 ##############################
 
 usage() {
-    echo "Usage: haploc_cpu.sh [-d wk_dir] [-h]"
+    echo "Usage: haploc_slurm.sh [-d wk_dir] [-x] [-h]"
     echo "  -d    Set the working directory (wk_dir)."
-    echo "  -x    Also include downstreams analysis (diffIns, diffComp and HaploCNV)."
+    echo "  -x    Include downstream analysis (diffIns, diffComp, and HaploCNV) when set as "true". Optional."
     echo "  -h    Display this help and exit."
 }
 
@@ -16,7 +16,7 @@ downstream=false
 
 ##############################
 
-while getopts ":d:h:x:" opt; do
+while getopts ":d:x:h" opt; do
     case $opt in
         d) wk_dir="$OPTARG"
         ;;
