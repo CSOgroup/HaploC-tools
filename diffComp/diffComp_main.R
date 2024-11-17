@@ -42,7 +42,7 @@
 
 	log_1 = try(CALDER_fun(wk_dir, map_type='phased', chr_nums2look=chrs2keep, n_cores=length(chrs2keep), black_list_region=black_list_region))
 	log_2 = try(CALDER_random_fun(wk_dir, n_cores=length(chrs2keep), chr_nums2look=chrs2keep, black_list_region=black_list_region))
-	log_3 = try(CALDER_fun(wk_dir, map_type='bulk', chr_nums2look=chrs2keep, n_cores=length(chrs2keep), black_list_region=black_list_region))		
+	log_3 = try(CALDER_fun(wk_dir, map_type='bulk', chr_nums2look=chrs2keep, n_cores=length(chrs2keep), black_list_region=NULL))
 	log_4 = try(build_comp_table_opt_paired_ALL(wk_dir, chrs2keep=chrs2keep))
 	log_5 = try(update_comp_Rdata(wk_dir))
 	log_6 = try(diffComp_fun(wk_dir, chrs2keep))
