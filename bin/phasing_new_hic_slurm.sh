@@ -1,4 +1,5 @@
 #!/bin/bash --login
+eval "$(conda shell.bash hook)"
 export LC_ALL=C
 
 ##############################
@@ -6,7 +7,7 @@ export LC_ALL=C
 usage() {
     echo "Usage: phasing_new_hic_slurm.sh [-p phased_dir] [-d wk_dir] [-x] [-h]"
     echo "  -p    Set the phased Hi-C directory."
-    echo "  -d    Set the new Hi-C directory to run HaploC analysis."    
+    echo "  -d    Set the new Hi-C directory to run HaploC analysis."
     echo "  -x    Include downstream analysis (diffIns, diffComp, and HaploCNV) when set as "true". Optional."
     echo "  -h    Display this help and exit."
 }
@@ -19,11 +20,11 @@ downstream=false
 while getopts ":d:x:h" opt; do
   case $opt in
     p) phased_dir="$OPTARG"
-    ;;  	
+    ;;
     d) wk_dir="$OPTARG"
     ;;
     x) downstream="$OPTARG"
-    ;;    
+    ;;
     h) usage
        exit 0
     ;;
@@ -67,15 +68,15 @@ run_HaploC()
 	k=distr
 	log_f=$wk_dir/log_file/log.$k.txt
 	jid_distr=$(sbatch -J distr.$ID -c 1 --mem 10G --time=30 -o $log_f --dependency=afterany:$jid_split $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
-		
+
 	##############################
 
 	n_chunks_f=$wk_dir/log_file/n_chunks.txt
 	while [ ! -f $n_chunks_f ]; do sleep 10; done
 
-	############################## STEP2: align and so on	
+	############################## STEP2: align and so on
 
-	k=bwa; 
+	k=bwa;
 	log_f=$wk_dir/log_file/log.$k
 	n_chunks=$(cat "$n_chunks_f")
 	jid_bwa=$(sbatch -J $k.$ID -c $thread4bwa --mem 120G --time=300 --array=1-$n_chunks -o $log_f.chunk=%a.txt $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## for files > 10Gb
@@ -99,7 +100,7 @@ run_HaploC()
 
 	############################## STEP4: instead of call snps, link it from $phased_dir
 
-	# k=snp 
+	# k=snp
 	# log_f=$wk_dir/log_file/log.$k.txt
 	# jid_snp=$(sbatch -J $k.$ID -c 20 --mem 100G --time=1000 -o $log_f --dependency=afterany:$jid_bwa $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## memory setting should be sufficient as in the free script / samtools merge
 	# echo snp $jid_snp >> $job_id_f
@@ -109,31 +110,31 @@ run_HaploC()
 
 	############################## STEP5: intersect SNP and gzip
 
-	k=sec 
+	k=sec
 	log_f=$wk_dir/log_file/log.$k
 	jid_sec=$(sbatch -J $k.$ID -c 1 --mem 20G --time=300 --array=1-$n_chunks -o $log_f.chunk=%a.txt --dependency=afterany:$jid_hic $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
-	echo sec $jid_sec >> $job_id_f	
+	echo sec $jid_sec >> $job_id_f
 
 	############################### STEP6: repair
 
 	# k=rep
 	# log_f=$wk_dir/log_file/log.$k
 	# jid_rep=$(sbatch -J $k.$ID -c 5 --mem 50G --time=100 --array=1-$n_chunks -o $log_f.chunk=%a.txt --dependency=afterany:$jid_bwa $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## memory setting should be sufficient as in the free script / samtools merge
-	# echo rep $jid_rep >> $job_id_f		
+	# echo rep $jid_rep >> $job_id_f
 
 	############################### STEP7: intg
 
 	# k=intg
 	# log_f=$wk_dir/log_file/log.$k
 	# jid_intg=$(sbatch -J $k.$ID -c 7 --mem 50G --time=1000 --array=1-23 -o $log_f.chr=%a.txt --dependency=afterany:$jid_rep:$jid_snp $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
-	# echo intg $jid_intg >> $job_id_f	
+	# echo intg $jid_intg >> $job_id_f
 
 	############################### STEP8: opt
 
 	# k=opt
 	# log_f=$wk_dir/log_file/log.$k.txt
 	# jid_opt=$(sbatch -J $k.$ID -c 23 --mem 100G --time=100 -o $log_f --dependency=afterany:$jid_intg:$jid_sec $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
-	# echo opt $jid_opt >> $job_id_f		
+	# echo opt $jid_opt >> $job_id_f
 
 	mkdir -p $wk_dir/mega/HapCut/hic_phased
 	ln -s $phased_dir/mega/HapCut/phased_hap_intg $wk_dir/mega/HapCut/phased_hap_intg
@@ -154,13 +155,13 @@ run_HaploC()
 	# log_f=$wk_dir/log_file/log.$k.txt
 	# jid_htransplot=$(sbatch -J $k.$ID -c 1 --mem 50G --time=100 -o $log_f --dependency=afterany:$jid_htrans $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## memory setting should be sufficient as in the free script / samtools merge
 	# echo htransplot $jid_htransplot >> $job_id_f
-	
+
 	##############################
 
 	[ "$downstream" = "false" ] && exit
 
 	k=diffIns
-	bin_size=25000	
+	bin_size=25000
 	log_f=$wk_dir/log_file/log.$k.txt
 	jid_diffIns=$(sbatch -J $k.$ID -c 10 --mem 50G --time=30 -o $log_f --dependency=afterany:$jid_mates $downstream_sh -d $wk_dir -k $k -s $bin_size | sed 's/Submitted batch job //') ## for files > 10Gb
 	echo diffIns $jid_diffIns >> $job_id_f
@@ -181,4 +182,4 @@ run_HaploC()
 
 run_HaploC $ID &
 
-##############################	
+##############################

@@ -1,4 +1,6 @@
 #!/bin/bash --login
+
+eval "$(conda shell.bash hook)"
 # set -euo pipefail
 
 conda activate nHapCUT2
@@ -15,9 +17,9 @@ while getopts ":d:k:m:n:c:" opt; do
     m) data_num="$OPTARG"
     ;;
     n) chunk_num="$OPTARG"
-    ;; 
+    ;;
     c) chr_num="$OPTARG"
-    ;;       
+    ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
   esac
@@ -54,18 +56,18 @@ case $k in
     "rep")
         conda activate HapCUT2
         $repair_sh -d $wk_dir -c $chunk_num
-        ;;        
+        ;;
     "snp")
         Rscript $main_R $wk_dir $k
         ;;
     "sec")
         mkdir -p $wk_dir/mega/aligned/
         Rscript $main_R $wk_dir $k $chunk_num
-        ;;  
+        ;;
     "intg")
         conda activate HapCUT2
         Rscript $shapeit_R $wk_dir $chr_num
-        for maxIS_Mb in ${maxIS[@]}; do Rscript $hapcut_R $wk_dir $chr_num $maxIS_Mb & done; wait 
+        for maxIS_Mb in ${maxIS[@]}; do Rscript $hapcut_R $wk_dir $chr_num $maxIS_Mb & done; wait
         ;;
     "distr" | "opt" | "mates" | "mega")
         Rscript $main_R $wk_dir $k

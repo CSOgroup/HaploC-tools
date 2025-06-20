@@ -1,4 +1,5 @@
 #!/bin/bash --login
+eval "$(conda shell.bash hook)"
 export LC_ALL=C
 
 ##############################
@@ -6,7 +7,7 @@ export LC_ALL=C
 usage() {
     echo "Usage: phasing_new_hic_cpu.sh [-p phased_dir] [-d wk_dir] [-x] [-h]"
     echo "  -p    Set the phased Hi-C directory."
-    echo "  -d    Set the new Hi-C directory to run HaploC analysis."    
+    echo "  -d    Set the new Hi-C directory to run HaploC analysis."
     echo "  -x    Include downstream analysis (diffIns, diffComp, and HaploCNV) when set as "true". Optional."
     echo "  -h    Display this help and exit."
 }
@@ -19,11 +20,11 @@ downstream=false
 while getopts ":d:x:h" opt; do
   case $opt in
     p) phased_dir="$OPTARG"
-    ;;  	
+    ;;
     d) wk_dir="$OPTARG"
     ;;
     x) downstream="$OPTARG"
-    ;;    
+    ;;
     h) usage
        exit 0
     ;;
@@ -74,11 +75,11 @@ run_HaploC()
 	while [ ! -f $n_chunks_f ]; do sleep 10; done
 	n_chunks=$(cat "$n_chunks_f")
 
-	############################## STEP2: align and so on	
+	############################## STEP2: align and so on
 
 	k=bwa
 	for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk; done
-		
+
 	############################## STEP3: proceed to generate hic
 
 	k=hic
@@ -126,7 +127,7 @@ run_HaploC()
 	###############################
 
 	k=diffIns
-	bin_size=25000	
+	bin_size=25000
 	$downstream_sh -d $wk_dir -k $k -s $bin_size
 
 	k=diffComp

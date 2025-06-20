@@ -1,4 +1,5 @@
 #!/bin/bash --login
+eval "$(conda shell.bash hook)"
 
 module load gcc miniconda3
 conda activate nHapCUT2
@@ -52,17 +53,17 @@ case $k in
     "rep")
         chunk_num=${SLURM_ARRAY_TASK_ID}
         $repair_sh -d $wk_dir -c $chunk_num
-        ;;        
+        ;;
     "sec")
         mkdir -p $wk_dir/mega/aligned/
         chunk_num=${SLURM_ARRAY_TASK_ID}
         Rscript $main_R $wk_dir $k $chunk_num
-        ;;        
+        ;;
     "intg")
         conda activate HapCUT2
         chr_num=${SLURM_ARRAY_TASK_ID}
         Rscript $shapeit_R $wk_dir $chr_num
-        for maxIS_Mb in ${maxIS[@]}; do Rscript $hapcut_R $wk_dir $chr_num $maxIS_Mb & done; wait 
+        for maxIS_Mb in ${maxIS[@]}; do Rscript $hapcut_R $wk_dir $chr_num $maxIS_Mb & done; wait
         ;;
     "distr" | "opt" | "mates" | "snp" | "mega")
         Rscript $main_R $wk_dir $k
@@ -71,8 +72,8 @@ case $k in
         Rscript $htrans_R $wk_dir
         ;;
     "htransplot")
-        Rscript $htrans_plot_R $wk_dir 
-        ;;            
+        Rscript $htrans_plot_R $wk_dir
+        ;;
     *)
         echo Invalid value of k: $k
         # Add any additional handling for an invalid value of k, if needed.

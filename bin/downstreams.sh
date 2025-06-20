@@ -1,5 +1,6 @@
 #!/bin/bash --login
 export LC_ALL=C
+eval "$(conda shell.bash hook)"
 conda activate nHapCUT2
 
 ##############################
@@ -59,13 +60,13 @@ diffComp_R=$repo_dir/diffComp/diffComp_main.R
 case $k in
     "diffIns")
         Rscript $diffIns_R $wk_dir $bin_size
-        ;; 
+        ;;
     "diffComp")
         Rscript $diffComp_R $wk_dir
-        ;;       
+        ;;
      "HaploCNV")
         Rscript $HaploCNV_R $wk_dir $bin_size
-        ;; 
+        ;;
     *)
         echo Invalid value of k: $k
         ;;

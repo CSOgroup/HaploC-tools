@@ -1,4 +1,5 @@
 #!/bin/bash --login
+eval "$(conda shell.bash hook)"
 export LC_ALL=C
 conda activate nHapCUT2
 
@@ -7,7 +8,7 @@ conda activate nHapCUT2
 usage() {
     echo "Usage: phasing_bam.sh [-d wk_dir] [-b bam_file] [-h]"
     echo "  -d    Set the working directory (wk_dir)."
-    echo "  -b    The bam file to be phased."    
+    echo "  -b    The bam file to be phased."
     echo "  -h    Display this help and exit."
 }
 
@@ -40,7 +41,7 @@ juicerDir=$repo_dir/HaploC/dependancies/juicer
 ###################################
 
 bam_base=$(basename "$bam2phase" .bam)
-bam_dir=$(dirname "$bam2phase")   
+bam_dir=$(dirname "$bam2phase")
 
 echo $bam_base
 

@@ -1,4 +1,5 @@
 #!/bin/bash --login
+eval "$(conda shell.bash hook)"
 export LC_ALL=C
 
 ##############################
@@ -72,12 +73,12 @@ run_HaploC()
     while [ ! -f $n_chunks_f ]; do sleep 10; done
     n_chunks=$(cat "$n_chunks_f")
 
-    ############################## STEP2: align and so on   
+    ############################## STEP2: align and so on
 
     k=bwa
     log_f=$wk_dir/log_file/log.$k.txt
     for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk >> $log_f 2>&1 & done; wait
-        
+
     ############################## STEP3: proceed to generate hic
 
     k=hic
@@ -132,7 +133,7 @@ run_HaploC()
 
     k=diffIns
     log_f=$wk_dir/log_file/log.$k.txt
-    bin_size=25000  
+    bin_size=25000
     $downstream_sh -d $wk_dir -k $k -s $bin_size >> $log_f 2>&1
 
     k=diffComp

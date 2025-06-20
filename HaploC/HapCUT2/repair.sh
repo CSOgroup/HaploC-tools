@@ -1,4 +1,5 @@
 #!/bin/bash --login
+eval "$(conda shell.bash hook)"
 
 export LC_ALL=C
 
@@ -56,7 +57,7 @@ hic_fixmate_sorted=${wk_dir_chunk}/splits/hic_fixmate_sorted.bam
 # repair chimeric Hi-C read pairs (from off-center Hi-C linker)
 conda run -n HapCUT2 python2.7 ${HiC_repair_py} ${input_mate1} ${input_mate2} ${hic_repaired} ${HaploC_dir}/dependancies/HapCUT2/
 
-######################################################### 
+#########################################################
 
 conda activate nHapCUT2
 samtools fixmate -@ 10 ${hic_repaired} - | samtools sort -@ 10 -T ${tmp_dir} -o ${hic_fixmate_sorted} - && rm ${hic_repaired}
@@ -64,11 +65,11 @@ samtools index -@ 10 ${hic_fixmate_sorted}
 
 ######################################################### split into chrs
 
-for chr_num in "${chr_nums[@]}"; 
+for chr_num in "${chr_nums[@]}";
 do
     chr_char=chr$chr_num
     samtools view -b ${hic_fixmate_sorted} ${chr_char} -@ 10 -o ${hic_split_dir}/hic_${chr_char}.bam
-    echo "chr$chr_num split done"    
+    echo "chr$chr_num split done"
 done
 
 #########################################################
@@ -77,5 +78,5 @@ done
 # # if(fz > 1)
 # {
 #     unlink(input_mate1)
-#     unlink(input_mate2) 
+#     unlink(input_mate2)
 # }
