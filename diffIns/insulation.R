@@ -1,4 +1,5 @@
 	#!/usr/bin/env Rscript
+	options(scipen = 999)
 	args = commandArgs(trailingOnly=TRUE)
 	wk_dir = args[1]
 	bin_size = as.numeric(args[2])
