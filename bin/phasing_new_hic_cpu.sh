@@ -17,7 +17,7 @@ downstream=false
 
 ##############################
 
-while getopts ":d:x:h" opt; do
+while getopts ":p:d:x:h" opt; do
   case $opt in
     p) phased_dir="$OPTARG"
     ;;
