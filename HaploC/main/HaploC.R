@@ -311,7 +311,7 @@
 
             inter_chr_pairs = inter_chr_pairs[Var1 %in% chr_nums2use][Var2 %in% chr_nums2use]
 
-            no_out = foreach(impute=c("impute", "n_impute")[1]) %do% ## do not do it in parallel, complicated
+            no_out = foreach(impute=c("impute", "n_impute")) %do% ## do not do it in parallel, complicated
             {
                 no_out = foreach(i=1:nrow(inter_chr_pairs)) %do%
                 {
@@ -336,7 +336,7 @@
         }
 
         system(cmd_dip_impute, wait=TRUE) ## this will not take too much time / let the cmd_dip_n_impute to wait
-        # system(cmd_dip_n_impute, wait=TRUE)
+        system(cmd_dip_n_impute, wait=TRUE)
         system(cmd_generate_random, wait=TRUE)
         
         create_inter_map()
