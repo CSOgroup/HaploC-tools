@@ -54,7 +54,7 @@
 # }
 
 
-while getopts "d:g:s:p:y:D:f:b:" opt; do
+while getopts "d:g:s:p:y:D:f:b:r:" opt; do
     case $opt in       
     g) genomeID=$OPTARG ;;
     d) topDir=$OPTARG ;;
@@ -63,6 +63,7 @@ while getopts "d:g:s:p:y:D:f:b:" opt; do
     y) site_file=$OPTARG ;;
     D) juiceDir=$OPTARG ;;
     b) ligation=$OPTARG ;;
+    r) resolutions=$OPTARG ;;
     [?]) printHelpAndExit 1;;
     esac
 done
@@ -88,6 +89,10 @@ echo $site_file
 echo $ligation
 echo $site
 
+
+if [ -z "$resolutions" ]; then
+    resolutions="10000,25000,40000,50000,100000,250000,500000,1000000"
+fi  
 
 ## Directories to be created and regex strings for listing files
 megadir=${topDir}"/mega"
@@ -171,7 +176,8 @@ fi
     ${juiceDir}/scripts/common/statistics.pl -q 1 -o${outputdir}/inter.txt -s $site_file -l $ligation ${outputdir}/merged_nodups.txt
 
     # echo ${juiceDir}/scripts/juicer_tools pre -r 10000,20000,25000,40000,50000,100000,1000000 -s ${outputdir}/inter.txt -g ${outputdir}/inter_hists.m -q 1 ${outputdir}/merged_nodups.txt ${outputdir}/inter.hic ${genomeID}
-    ${juiceDir}/scripts/common/juicer_tools pre -r 10000,20000,25000,40000,50000,100000,1000000 -s ${outputdir}/inter.txt -g ${outputdir}/inter_hists.m -q 1 ${outputdir}/merged_nodups.txt ${outputdir}/inter.hic ${genomeID}
+    # ${juiceDir}/scripts/common/juicer_tools pre -r 10000,20000,25000,40000,50000,100000,1000000 -s ${outputdir}/inter.txt -g ${outputdir}/inter_hists.m -q 1 ${outputdir}/merged_nodups.txt ${outputdir}/inter.hic ${genomeID}
+    ${juiceDir}/scripts/common/juicer_tools pre -r $resolutions -s ${outputdir}/inter.txt -g ${outputdir}/inter_hists.m -q 1 ${outputdir}/merged_nodups.txt ${outputdir}/inter.hic ${genomeID}
  
     # gzip -f ${outputdir}/merged_nodups.txt
 

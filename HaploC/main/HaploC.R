@@ -107,8 +107,9 @@
 
     if(job_name=='mega')
     {
+        if (!exists("unphased_resolutions")) unphased_resolutions = "10000,20000,25000,40000,50000,100000,1000000"
         res_sites  = sprintf("%s/restriction_sites/%s_%s.txt", juicerDir, genome_version, enzyme)
-        run_juicer_mega(wk_dir, juicerDir, enzyme, res_sites)
+        run_juicer_mega(wk_dir, juicerDir, enzyme, res_sites, unphased_resolutions)
         cat(sprintf('Finished:: job=%s', job_name))
         quit(save="no")
     }
@@ -283,8 +284,9 @@
 
     if(job_name=='mates')
     {
-        cmd_dip_impute = sprintf("%s %s %s %s %s", diploid_opt_intra_sh, wk_dir, "impute", repo_dir, genome_version)
-        cmd_dip_n_impute = sprintf("%s %s %s %s %s", diploid_opt_intra_sh, wk_dir, "n_impute", repo_dir, genome_version)
+        if (!exists("phased_resolutions")) phased_resolutions = "10000,20000,25000,40000,50000,100000,1000000"
+        cmd_dip_impute = sprintf("%s %s %s %s %s %s", diploid_opt_intra_sh, wk_dir, "impute", repo_dir, genome_version, phased_resolutions)
+        cmd_dip_n_impute = sprintf("%s %s %s %s %s %s", diploid_opt_intra_sh, wk_dir, "n_impute", repo_dir, genome_version, phased_resolutions)
         cmd_generate_random = sprintf("%s %s %s %s", generate_random_mixed_sh, wk_dir, repo_dir, genome_version)
 
         create_inter_map = function()
@@ -318,13 +320,13 @@
                     chr_num_x = inter_chr_pairs[[1]][i]
                     chr_num_y = inter_chr_pairs[[2]][i]
 
-                    command_xy = sprintf("%s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, chr_num_x, chr_num_y, identity, 'no', impute, repo_dir, genome_version)
+                    command_xy = sprintf("%s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, chr_num_x, chr_num_y, identity, 'no', impute, repo_dir, genome_version, phased_resolutions)
                     system(command_xy)
                 }
 
                 ###################################
 
-                command_create_hic = sprintf("%s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, "chrNA", "chrNA", identity, 'yes', impute, repo_dir, genome_version) ## chrNA: pseudo chr
+                command_create_hic = sprintf("%s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, "chrNA", "chrNA", identity, 'yes', impute, repo_dir, genome_version, phased_resolutions) ## chrNA: pseudo chr
                 system(command_create_hic)
             }
 

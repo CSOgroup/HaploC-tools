@@ -11,6 +11,13 @@
 	impute=$6 ## impute or n_impute
 	repo_dir=$7
 	genome_version=$8
+	resolutions=$9
+
+	########################################
+
+	if [ -z "$resolutions" ]; then
+	    resolutions="10000,25000,40000,50000,100000,250000,500000,1000000"
+	fi
 
 	juicerDir=${repo_dir}/HaploC/dependancies/juicer/
 	juicer_jar=${juicerDir}/scripts/juicer_tools_1.19.02.jar
@@ -154,9 +161,11 @@
 		local wk_dir_mega=$1
 		local which=$2
 		local genome_version=$3
+		local resolutions=$4
+
 		text_f=$wk_dir_mega/HapCut/hic_phased/hic_interALL_$identity.$which.txt
 		echo $text_f
-		java -Xmx200g -jar $juicer_jar pre -r 10000,20000,25000,40000,50000,100000,500000,1000000 $text_f $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.inter.$which.hic $genome_version
+		java -Xmx200g -jar $juicer_jar pre -r $resolutions $text_f $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.inter.$which.hic $genome_version
 	}
 
 	###########################################
@@ -165,10 +174,12 @@
 	{
 		local wk_dir_mega=$1
 		local which=$2
-		local genome_version=$3		
+		local genome_version=$3
+		local resolutions=$4
+
 		text_f=$wk_dir_mega/HapCut/hic_phased/hic_interALL_$identity.n_impute.$which.txt
 		echo $text_f
-		java -Xmx200g -jar $juicer_jar pre -r 10000,20000,25000,40000,50000,100000,500000,1000000 $text_f $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.inter.n_impute.$which.hic $genome_version
+		java -Xmx200g -jar $juicer_jar pre -r $resolutions $text_f $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.inter.n_impute.$which.hic $genome_version
 	}
 
 	###########################################
@@ -177,9 +188,9 @@
 		echo "I am creating hap inter hic files"
 		if [[ $impute == "n_impute" ]]
 		then
-			for which in mat pat switch.mat switch.pat; do generate_hic_n_impute $wk_dir_mega $which $genome_version & done
+			for which in mat pat switch.mat switch.pat; do generate_hic_n_impute $wk_dir_mega $which $genome_version $resolutions & done
 		else
-			for which in mat pat switch.mat switch.pat; do generate_hic_impute $wk_dir_mega $which $genome_version & done
+			for which in mat pat switch.mat switch.pat; do generate_hic_impute $wk_dir_mega $which $genome_version $resolutions & done
 		fi
 	fi
 
