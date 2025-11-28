@@ -320,13 +320,13 @@
                     chr_num_x = inter_chr_pairs[[1]][i]
                     chr_num_y = inter_chr_pairs[[2]][i]
 
-                    command_xy = sprintf("%s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, chr_num_x, chr_num_y, identity, 'no', impute, repo_dir, genome_version, phased_resolutions)
+                    command_xy = sprintf("%s %s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, chr_num_x, chr_num_y, identity, 'no', impute, repo_dir, genome_version, phased_resolutions)
                     system(command_xy)
                 }
 
                 ###################################
 
-                command_create_hic = sprintf("%s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, "chrNA", "chrNA", identity, 'yes', impute, repo_dir, genome_version, phased_resolutions) ## chrNA: pseudo chr
+                command_create_hic = sprintf("%s %s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, "chrNA", "chrNA", identity, 'yes', impute, repo_dir, genome_version, phased_resolutions) ## chrNA: pseudo chr
                 system(command_create_hic)
             }
 
