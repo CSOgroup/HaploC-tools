@@ -14,7 +14,6 @@ usage() {
 for arg in "$@"; do [[ $arg == "--help" ]] && usage && exit 0; done
 downstream=false
 
-
 ##############################
 
 while getopts ":d:x:h" opt; do
@@ -103,12 +102,17 @@ run_HaploC()
     jid_snp=$(sbatch -J $k.$ID -c 20 --mem 100G --time=1000 -o $log_f --dependency=afterany:$jid_bwa $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## memory setting should be sufficient as in the free script / samtools merge
     echo snp $jid_snp >> $job_id_f
 
-    ############################## STEP5: intersect SNP and gzip
-
+    ############################## STEP5: intersect SNP and gzip and concatent chunks
+    
     k=sec
     log_f=$wk_dir/log_file/log.$k
-    jid_sec=$(sbatch -J $k.$ID -c 1 --mem 20G --time=300 --array=1-$n_chunks -o $log_f.chunk=%a.txt --dependency=afterany:$jid_snp:$jid_hic $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
+    jid_sec=$(sbatch -J $k.$ID -c 1 --mem 20G --time=300 --array=1-$n_chunks -o $log_f.chunk=%a.txt --dependency=afterany:$jid_hic:$jid_snp $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
     echo sec $jid_sec >> $job_id_f
+
+    k=concat
+    log_f=$wk_dir/log_file/log.$k.txt
+    jid_concat=$(sbatch -J $k.$ID -c 1 --mem 10G --time=100 -o $log_f --dependency=afterany:$jid_sec $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
+    echo sec $jid_concat >> $job_id_f
 
     ############################### STEP6: repair
 

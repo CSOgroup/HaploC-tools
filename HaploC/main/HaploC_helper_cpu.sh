@@ -57,9 +57,6 @@ case $k in
         conda activate HapCUT2
         $repair_sh -d $wk_dir -c $chunk_num
         ;;
-    "snp")
-        Rscript $main_R $wk_dir $k
-        ;;
     "sec")
         mkdir -p $wk_dir/mega/aligned/
         Rscript $main_R $wk_dir $k $chunk_num
@@ -69,7 +66,7 @@ case $k in
         Rscript $shapeit_R $wk_dir $chr_num
         for maxIS_Mb in ${maxIS[@]}; do Rscript $hapcut_R $wk_dir $chr_num $maxIS_Mb & done; wait
         ;;
-    "distr" | "opt" | "mates" | "mega")
+    "distr" | "opt" | "mates" | "snp" | "concat" | "mega")
         Rscript $main_R $wk_dir $k
         ;;
     *)

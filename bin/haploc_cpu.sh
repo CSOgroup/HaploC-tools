@@ -17,19 +17,19 @@ downstream=false
 ##############################
 
 while getopts ":d:x:h" opt; do
-case $opt in
-    d) wk_dir="$OPTARG"
-    ;;
-    x) downstream="$OPTARG"
-    ;;
-    h) usage
-        exit 0
-    ;;
-    \?) echo "Invalid option -$OPTARG" >&2
-        usage
-        exit 1
-    ;;
-esac
+    case $opt in
+        d) wk_dir="$OPTARG"
+        ;;
+        x) downstream="$OPTARG"
+        ;;
+        h) usage
+            exit 0
+        ;;
+        \?) echo "Invalid option -$OPTARG" >&2
+            usage
+            exit 1
+        ;;
+    esac
 done
 
 ##############################
@@ -97,11 +97,16 @@ run_HaploC()
     log_f=$wk_dir/log_file/log.$k.txt
     $HaploC_sh -d ${wk_dir} -k $k >> $log_f 2>&1
 
-    ############################## STEP5: intersect SNP and gzip
+    ############################## STEP5: intersect SNP and gzip and concatent chunks
 
     k=sec
     log_f=$wk_dir/log_file/log.$k.txt
     for chunk in $(seq 1 $n_chunks); do $HaploC_sh -d ${wk_dir} -k $k -n $chunk >> $log_f 2>&1 & done; wait
+
+    k=concat
+    log_f=$wk_dir/log_file/log.$k.txt
+    $HaploC_sh -d ${wk_dir} -k $k >> $log_f 2>&1
+    echo sec $jid_concat >> $job_id_f
 
     ############################### STEP6: repair
 

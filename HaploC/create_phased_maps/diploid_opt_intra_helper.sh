@@ -4,12 +4,17 @@
 	impute=$2 ## impute or n_impute
 	repo_dir=$3
 	genome_version=$4
+	resolutions=$5
 
 	##########################################################
 
 	identity=opt
 	wk_dir_mega=$wk_dir/mega/
 	merged_nodups_snp_dir=$wk_dir_mega/aligned/merged_nodup_chrXchrY
+
+	if [ -z "$resolutions" ]; then
+	    resolutions="10000,25000,40000,50000,100000,250000,500000,1000000"
+	fi
 
 	mkdir -p $wk_dir_mega/HapCut/hic_phased/
 
@@ -112,6 +117,7 @@
 		local wk_dir_mega=$1
 		local which=$2
 		local genome_version=$3
+		local resolutions=$4
 
 		# cat $wk_dir_mega/HapCut/hic_phased/hic_chr*$identity.$which.txt > $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.$which.txt
 
@@ -120,9 +126,9 @@
 	
 		if [ -z "$hic_name" ]
 		then
-		    java -Xmx200g -jar $juicer_jar pre -r 10000,20000,25000,40000,50000,60000,70000,80000,100000,250000,500000,1000000 $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.$which.txt $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.$which.hic $genome_version
+		    java -Xmx200g -jar $juicer_jar pre -r $resolutions $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.$which.txt $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.$which.hic $genome_version
 		else
-		   	java -Xmx200g -jar $juicer_jar pre -r 10000,20000,25000,40000,50000,60000,70000,80000,100000,250000,500000,1000000 $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.$which.txt $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.$hic_name.$which.hic $genome_version
+		   	java -Xmx200g -jar $juicer_jar pre -r $resolutions $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.$which.txt $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.$hic_name.$which.hic $genome_version
 		fi
 
 	}
@@ -132,6 +138,7 @@
 		local wk_dir_mega=$1
 		local which=$2
 		local genome_version=$3
+		local resolutions=$4
 
 		# cat $wk_dir_mega/HapCut/hic_phased/hic_chr*$identity.$which.txt > $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.$which.txt
 
@@ -140,9 +147,9 @@
 	
 		if [ -z "$hic_name" ]
 		then
-		    java -Xmx200g -jar $juicer_jar pre -r 10000,20000,25000,40000,50000,60000,70000,80000,100000,250000,500000,1000000 $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.n_impute.$which.txt $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.n_impute.$which.hic $genome_version
+		    java -Xmx200g -jar $juicer_jar pre -r $resolutions $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.n_impute.$which.txt $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.n_impute.$which.hic $genome_version
 		else
-		   	java -Xmx200g -jar $juicer_jar pre -r 10000,20000,25000,40000,50000,60000,70000,80000,100000,250000,500000,1000000 $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.n_impute.$which.txt $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.n_impute.$hic_name.$which.hic $genome_version
+		   	java -Xmx200g -jar $juicer_jar pre -r $resolutions $wk_dir_mega/HapCut/hic_phased/hic_ALL_chrs.$identity.n_impute.$which.txt $wk_dir_mega/HapCut/hic_phased/all_chrs.$identity.n_impute.$hic_name.$which.hic $genome_version
 		fi
 
 	}
@@ -158,9 +165,9 @@
 
 	if [ $impute == "n_impute" ]
 	then
-		for which in mat pat; do generate_hic_n_impute $wk_dir_mega $which $genome_version & done
+		for which in mat pat; do generate_hic_n_impute $wk_dir_mega $which $genome_version $resolutions & done
 	else
-		for which in mat pat; do generate_hic_impute $wk_dir_mega $which $genome_version & done
+		for which in mat pat; do generate_hic_impute $wk_dir_mega $which $genome_version $resolutions & done
 		Rscript $htrans_cis_info_global_fun $wk_dir $identity psudo_chr generate_plot		
 	fi
 	

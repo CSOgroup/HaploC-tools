@@ -107,8 +107,9 @@
 
     if(job_name=='mega')
     {
+        if (!exists("unphased_resolutions")) unphased_resolutions = "10000,20000,25000,40000,50000,100000,1000000"
         res_sites  = sprintf("%s/restriction_sites/%s_%s.txt", juicerDir, genome_version, enzyme)
-        run_juicer_mega(wk_dir, juicerDir, enzyme, res_sites)
+        run_juicer_mega(wk_dir, juicerDir, enzyme, res_sites, unphased_resolutions)
         cat(sprintf('Finished:: job=%s', job_name))
         quit(save="no")
     }
@@ -175,9 +176,9 @@
     # source(file.path(repo_dir, 'HaploC', 'intg_split_merged_nodup.R'))
     # system(ignore.stdout=FALSE, sprintf('Rscript %s %s', file.path(repo_dir, 'HaploC', 'gzip_merged_nodup.R'), wk_dir), wait=FALSE)
 
-    ######################################################### 6: opt
+    ######################################################### 6: concatenate chunks
 
-    if(job_name=='opt')
+    if(job_name=='concat')
     {
         chr_nums2use = get_chr2use(wk_dir)
         n_chr = length(chr_nums2use)
@@ -195,7 +196,7 @@
         split_dir_mega = file.path(wk_dir, 'mega', 'aligned', 'merged_nodup_chrXchrY')
         dir.create(split_dir_mega, recursive=TRUE, showWarnings=FALSE)
 
-        add_chunk = function(chunk_num)
+        concat_chunk = function(chunk_num)
         {
             chunk_name = sprintf('chunk%s', chunk_num)
             no_out = foreach(i=1:nrow(chr_pairs)) %do%
@@ -211,7 +212,49 @@
             }
         }
 
-        for(chunk_num in 1:n_chunks) try(add_chunk(chunk_num))
+        for(chunk_num in 1:n_chunks) try(concat_chunk(chunk_num))
+
+        cat(sprintf('Finished:: job=%s', job_name))
+        quit(save="no")
+    }
+
+    ######################################################### 7: opt
+
+    if(job_name=='opt')
+    {
+        chr_nums2use = get_chr2use(wk_dir)
+        # n_chr = length(chr_nums2use)
+
+        # intra_chr_pairs = data.table(expand.grid(chr_nums2use, chr_nums2use))[Var1 == Var2]
+        # inter_chr_pairs = data.table(expand.grid(1:23, 1:23))[Var1 < Var2]
+        # inter_chr_pairs[inter_chr_pairs==23] = 'X'
+        # inter_chr_pairs = inter_chr_pairs[Var1 %in% chr_nums2use][Var2 %in% chr_nums2use]
+        # chr_pairs = rbind(intra_chr_pairs, inter_chr_pairs)
+
+        # n_chunks = fread(sprintf('%s/log_file/n_chunks.txt', wk_dir))[[1]]
+
+        #########################
+
+        # split_dir_mega = file.path(wk_dir, 'mega', 'aligned', 'merged_nodup_chrXchrY')
+        # dir.create(split_dir_mega, recursive=TRUE, showWarnings=FALSE)
+
+        # concat_chunk = function(chunk_num)
+        # {
+        #     chunk_name = sprintf('chunk%s', chunk_num)
+        #     no_out = foreach(i=1:nrow(chr_pairs)) %do%
+        #     {
+        #         chr_num_x = chr_pairs[[1]][i]
+        #         chr_num_y = chr_pairs[[2]][i]
+
+        #         split_dir_chunks = file.path(wk_dir, chunk_name, 'aligned', 'merged_nodup_chrXchrY')
+        #         merged_nodup_chunks = paste0(sprintf('%s/merged_nodups.txt_chr%schr%s.snps', split_dir_chunks, chr_num_x, chr_num_y), collapse=' ')
+        #         merged_nodup_mega = sprintf('%s/merged_nodups.txt_chr%schr%s.snps', split_dir_mega, chr_num_x, chr_num_y)
+        #         if(chunk_num!=1) system(sprintf("cat %s >> %s", merged_nodup_chunks, merged_nodup_mega), wait=TRUE)
+        #         if(chunk_num==1) system(sprintf("cat %s > %s", merged_nodup_chunks, merged_nodup_mega), wait=TRUE)                
+        #     }
+        # }
+
+        # for(chunk_num in 1:n_chunks) try(concat_chunk(chunk_num))
 
         #########################
 
@@ -241,8 +284,9 @@
 
     if(job_name=='mates')
     {
-        cmd_dip_impute = sprintf("%s %s %s %s %s", diploid_opt_intra_sh, wk_dir, "impute", repo_dir, genome_version)
-        cmd_dip_n_impute = sprintf("%s %s %s %s %s", diploid_opt_intra_sh, wk_dir, "n_impute", repo_dir, genome_version)
+        if (!exists("phased_resolutions")) phased_resolutions = "10000,20000,25000,40000,50000,100000,1000000"
+        cmd_dip_impute = sprintf("%s %s %s %s %s %s", diploid_opt_intra_sh, wk_dir, "impute", repo_dir, genome_version, phased_resolutions)
+        cmd_dip_n_impute = sprintf("%s %s %s %s %s %s", diploid_opt_intra_sh, wk_dir, "n_impute", repo_dir, genome_version, phased_resolutions)
         cmd_generate_random = sprintf("%s %s %s %s", generate_random_mixed_sh, wk_dir, repo_dir, genome_version)
 
         create_inter_map = function()
@@ -276,13 +320,13 @@
                     chr_num_x = inter_chr_pairs[[1]][i]
                     chr_num_y = inter_chr_pairs[[2]][i]
 
-                    command_xy = sprintf("%s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, chr_num_x, chr_num_y, identity, 'no', impute, repo_dir, genome_version)
+                    command_xy = sprintf("%s %s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, chr_num_x, chr_num_y, identity, 'no', impute, repo_dir, genome_version, phased_resolutions)
                     system(command_xy)
                 }
 
                 ###################################
 
-                command_create_hic = sprintf("%s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, "chrNA", "chrNA", identity, 'yes', impute, repo_dir, genome_version) ## chrNA: pseudo chr
+                command_create_hic = sprintf("%s %s %s %s %s %s %s %s %s %s", script_dip_inter, wk_dir_mega, "chrNA", "chrNA", identity, 'yes', impute, repo_dir, genome_version, phased_resolutions) ## chrNA: pseudo chr
                 system(command_create_hic)
             }
 

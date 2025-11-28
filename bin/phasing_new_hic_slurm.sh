@@ -108,12 +108,17 @@ run_HaploC()
 	mkdir -p $wk_dir/mega/
 	ln -s $phased_dir/mega/VCFs $wk_dir/mega/VCFs
 
-	############################## STEP5: intersect SNP and gzip
+	############################## STEP5: intersect SNP and gzip and concatent chunks
 
 	k=sec
 	log_f=$wk_dir/log_file/log.$k
 	jid_sec=$(sbatch -J $k.$ID -c 1 --mem 20G --time=300 --array=1-$n_chunks -o $log_f.chunk=%a.txt --dependency=afterany:$jid_hic $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
 	echo sec $jid_sec >> $job_id_f
+
+	k=concat
+	log_f=$wk_dir/log_file/log.$k.txt
+	jid_concat=$(sbatch -J $k.$ID -c 1 --mem 10G --time=100 -o $log_f --dependency=afterany:$jid_sec $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
+	echo concat $jid_concat >> $job_id_f
 
 	############################### STEP6: repair
 
@@ -143,7 +148,7 @@ run_HaploC()
 
 	k=mates
 	log_f=$wk_dir/log_file/log.$k.txt
-	jid_mates=$(sbatch -J $k.$ID -c 23 --mem 50G --time=600 -o $log_f --dependency=afterany:$jid_sec $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
+	jid_mates=$(sbatch -J $k.$ID -c 23 --mem 50G --time=600 -o $log_f --dependency=afterany:$jid_concat $HaploC_sh -d $wk_dir -k $k | sed 's/Submitted batch job //')
 	echo mates $jid_mates >> $job_id_f
 
 	# k=htrans
@@ -168,7 +173,7 @@ run_HaploC()
 
 	k=diffComp
 	log_f=$wk_dir/log_file/log.$k.txt
-	jid_diffComp=$(sbatch -J $k.$ID -c 10 --mem 50G --time=30 -o $log_f --dependency=afterany:$jid_mates $downstream_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## for files > 10Gb
+	jid_diffComp=$(sbatch -J $k.$ID -c 10 --mem 50G --time=100 -o $log_f --dependency=afterany:$jid_mates $downstream_sh -d $wk_dir -k $k | sed 's/Submitted batch job //') ## for files > 10Gb
 	echo diffComp $jid_diffComp >> $job_id_f
 
 	k=HaploCNV

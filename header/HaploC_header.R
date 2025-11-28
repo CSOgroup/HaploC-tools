@@ -822,7 +822,7 @@
         }        
     }
 
-    run_juicer_mega = function(wk_dir, juicerDir, enzyme, res_sites)
+    run_juicer_mega = function(wk_dir, juicerDir, enzyme, res_sites, unphased_resolutions="10000,20000,25000,40000,50000,100000,1000000")
     {
         if(grepl('mm10', res_sites)) genome_version = 'mm10'
         if(grepl('hg19', res_sites)) genome_version = 'hg19'
